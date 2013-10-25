@@ -146,8 +146,11 @@ public class ConcurrentBucketHashMap<K, V> {
 
         for ( int i = 0 ; i < numberOfBuckets ; i++ ) {
             Bucket<K, V> theBucket =  buckets.get(i) ;
-            synchronized( theBucket ) {
-                size += theBucket.size() ;
+            theBucket.lockWrite();
+            try{
+            	size += theBucket.size();
+            } finally {
+            	theBucket.unlockWrite();
             }
         }
         return size ;
