@@ -48,9 +48,17 @@ public class ConcurrentBucketHashMap<K, V> {
      * with a ReadWriteLock "rwl".
      */
     class Bucket<K, V> {
+    	
+  
+    	ReentrantReadWriteLock ReadWriteLock = new ReentrantReadWriteLock();
+    	
+    	Lock rLock = ReadWriteLock.readLock();
+    	Lock wLock = ReadWriteLock.writeLock();
+    	
         private final List<Pair<K, V>> contents =
                 new ArrayList<Pair<K, V>>() ;
 
+        
         /*
          * Return the current Bucket size.
          */
@@ -84,6 +92,22 @@ public class ConcurrentBucketHashMap<K, V> {
          */
         void removePair(int index) {
             contents.remove(index) ;
+        }
+        
+        void lockRead(){
+        	rLock.lock();
+        }
+        
+        void unlockRead(){
+        	rLock.unlock();
+        }
+        
+        void lockWrite(){
+        	wLock.lock();
+        }
+        
+        void unlockWrite(){
+        	wLock.unlock();
         }
     }
 
