@@ -131,8 +131,11 @@ public class ConcurrentBucketHashMap<K, V> {
         Bucket<K, V> theBucket = buckets.get(bucketIndex(key)) ;
         boolean      contains ;
 
-        synchronized( theBucket ) {
+        theBucket.lockWrite();
+        try{
             contains = findPairByKey(key, theBucket) >= 0 ;
+        }finally{
+        	theBucket.unlockWrite();
         }
 
         return contains ;
@@ -164,12 +167,15 @@ public class ConcurrentBucketHashMap<K, V> {
         Bucket<K, V> theBucket = buckets.get(bucketIndex(key)) ;
         Pair<K, V>   pair      = null ;
 
-        synchronized(theBucket) {
+        theBucket.lockWrite();
+        try{
             int index = findPairByKey(key, theBucket) ;
 
             if ( index >= 0 ) {
                 pair = theBucket.getPair(index) ;
             }
+        }finally{
+        	theBucket.unlockWrite();
         }
 
         return (pair == null) ? null : pair.value ;
@@ -185,7 +191,8 @@ public class ConcurrentBucketHashMap<K, V> {
         Pair<K, V>   newPair   = new Pair<K, V>(key, value) ;
         V            oldValue ;
 
-        synchronized(theBucket) {
+        theBucket.lockRead();
+        try{
             int index = findPairByKey(key, theBucket) ;
 
             if ( index >= 0 ) {
@@ -197,6 +204,8 @@ public class ConcurrentBucketHashMap<K, V> {
                 theBucket.addPair(newPair) ;
                 oldValue = null ;
             }
+        }finally{
+        	theBucket.unlockRead();
         }
         return oldValue ;
     }
@@ -210,7 +219,8 @@ public class ConcurrentBucketHashMap<K, V> {
         Bucket<K, V> theBucket = buckets.get(bucketIndex(key)) ;
         V removedValue = null ;
 
-        synchronized(theBucket) {
+        theBucket.lockRead();
+        try{
             int index = findPairByKey(key, theBucket) ;
 
             if ( index >= 0 ) {
@@ -219,6 +229,8 @@ public class ConcurrentBucketHashMap<K, V> {
                 theBucket.removePair(index) ;
                 removedValue = pair.value ;
             }
+        }finally{
+        	theBucket.unlockRead();
         }
         return removedValue ;
     }
