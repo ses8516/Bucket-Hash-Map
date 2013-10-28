@@ -136,8 +136,8 @@ public class ConcurrentBucketHashMap<K, V> {
             contains = findPairByKey(key, theBucket) >= 0 ;
         }finally{
         	theBucket.unlockWrite();
-        }
-
+        }        
+        System.out.println("Thread " + Thread.currentThread().getName() + " reads if key "+key+" exists");
         return contains ;
     }
 
@@ -159,6 +159,7 @@ public class ConcurrentBucketHashMap<K, V> {
             	theBucket.unlockWrite();
             }
         }
+        System.out.println("Thread " + Thread.currentThread().getName() + " reads a size of "+size);
         return size ;
     }
 
@@ -180,7 +181,7 @@ public class ConcurrentBucketHashMap<K, V> {
         }finally{
         	theBucket.unlockWrite();
         }
-
+        System.out.println("Thread " + Thread.currentThread().getName() + " reads value of key "+key);
         return (pair == null) ? null : pair.value ;
     }
 
@@ -210,6 +211,7 @@ public class ConcurrentBucketHashMap<K, V> {
         }finally{
         	theBucket.unlockRead();
         }
+        System.out.println("Thread " + Thread.currentThread().getName() + " puts value "+value+" with key "+key);
         return oldValue ;
     }
 
@@ -235,6 +237,7 @@ public class ConcurrentBucketHashMap<K, V> {
         }finally{
         	theBucket.unlockRead();
         }
+        System.out.println("Thread " + Thread.currentThread().getName() + " removes key "+key);
         return removedValue ;
     }
 
